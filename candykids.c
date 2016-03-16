@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
     }
     
     /*
-    * wait for no candy
+    * wait for no candy left
     */
     while(bbuff_is_empty() == false) {
         printf("Waiting for all candy to be consumed\n");
