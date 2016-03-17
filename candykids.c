@@ -19,7 +19,7 @@ struct candy_t {
 double current_time_in_ms(void) {
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
-    return (now.tv_sec * 1000.0) + (now.tv_nsec/1000000.0);
+    return now.tv_sec * 1000.0 + now.tv_nsec/1000000.0;
 }
 
 void insert_candy(int factory_num) {
@@ -36,7 +36,6 @@ void* factory_thread_func(void* arg) {
         int sleep_time = rand() % 4;
         printf("\tFactory %d ships candy & waits %ds\n", *id, sleep_time);
         insert_candy(*id);
-        // TODO: increment candy-created count
         stats_record_produced(*id);
         sleep(sleep_time);
     }
@@ -51,7 +50,8 @@ void* kid_thread_func(void* arg) {
         int factory_id = candy->factory_number;
         double timestamp = candy->time_stamp_in_ms;
         printf("Candy - Factory ID: %d, Timestamp: %f\n", factory_id, timestamp);
-        stats_record_consumed(factory_id, timestamp);
+        double delay = current_time_in_ms() - timestamp;
+        stats_record_consumed(factory_id, delay);
         free(candy);
         // pick random num, either 0 or 1
         int sleep_time = rand() % 2;
