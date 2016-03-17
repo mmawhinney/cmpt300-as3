@@ -9,8 +9,6 @@
 #include "bbuff.h"
 #include "stats.h"
 
-
-
 _Bool stop_thread = false;
 
 struct candy_t {
@@ -38,6 +36,8 @@ void* factory_thread_func(void* arg) {
         int sleep_time = rand() % 4;
         printf("\tFactory %d ships candy & waits %ds\n", *id, sleep_time);
         insert_candy(*id);
+        // TODO: increment candy-created count
+        stats_record_produced(*id);
         sleep(sleep_time);
     }
     printf("Candy-factory %d done\n", *id);
@@ -51,6 +51,7 @@ void* kid_thread_func(void* arg) {
         int factory_id = candy->factory_number;
         double timestamp = candy->time_stamp_in_ms;
         printf("Candy - Factory ID: %d, Timestamp: %f\n", factory_id, timestamp);
+        stats_record_consumed(factory_id, timestamp);
         free(candy);
         // pick random num, either 0 or 1
         int sleep_time = rand() % 2;
@@ -82,8 +83,8 @@ int main(int argc, char* argv[]) {
     * initialize bounded buffer and stats modules
     */
     bbuff_init();
-    // stats_init(num_producers);
-
+    stats_init(num_factories);
+    
     /*
     * launch factory threads
     */
@@ -150,9 +151,12 @@ int main(int argc, char* argv[]) {
     /*
     * print stats
     */
+    stats_display();
+    
 
     /*
     * deallocate memory
     */
+    stats_cleanup();
 
 }

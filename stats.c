@@ -1,23 +1,31 @@
 #include "stats.h"
 #include <stdlib.h>
 
-typedef struct {
+struct factory_stats {
     int factory;
     int made;
     int eaten;
     int minDelay;
     int avgDelay;
     int maxDelay;
-} factory_stats;
+};
 
 int num_factories;
-factory_stats* stats_array;
+struct factory_stats** stats_array;
 
 void stats_init(int num_producers) {
-    stats_array = malloc(sizeof(factory_stats) * num_producers);
+    num_factories = num_producers;
+    stats_array = malloc(sizeof(struct factory_stats) * num_producers);
+    for(int i = 0; i < num_producers; i++) {
+        struct factory_stats* stats = malloc(sizeof(struct factory_stats));
+        stats_array[i] = stats;
+    }
 }
 
 void stats_cleanup(void) {
+    for(int i = 0; i < num_factories; i++) {
+        free(stats_array[i]);
+    }
     free(stats_array);
 }
 
