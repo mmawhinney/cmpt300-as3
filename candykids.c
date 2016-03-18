@@ -41,7 +41,7 @@ void* factory_thread_func(void* arg) {
     }
     printf("Candy-factory %d done\n", *id);
     free(id);
-    return NULL;
+    pthread_exit(NULL);
 }
 
 void* kid_thread_func(void* arg) {
